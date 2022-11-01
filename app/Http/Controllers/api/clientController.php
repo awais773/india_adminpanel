@@ -50,7 +50,6 @@ class clientController extends Controller
             'path' => $request->path,
             'agreementfile' => $request->agreementfile,
 
-
          ]);
         
         return response()->json(['Program created successfully.',($program)]);
