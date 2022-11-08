@@ -17,9 +17,9 @@ class Currency extends Model
     ];
 
     public function client() {
-        return $this->hasMany('App\Models\Api\Client', 'id', 'client_id');
+        return $this->belongsToMany('App\Models\Api\Client', 'id', 'client_id');
     }
     public function position() {
-        return $this->hasMany('App\Models\Api\Position', 'id', 'position_id');
+        return $this->belongsToMany('App\Models\Api\Position', 'id', 'position_id');
     }
 }

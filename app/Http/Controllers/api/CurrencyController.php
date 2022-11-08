@@ -5,7 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Models\Api\Position;
+use App\Models\Api\Client;
 use App\Models\Api\Currency;
+
 use GrahamCampbell\ResultType\Success;
 use GuzzleHttp\Psr7\Message;
 class CurrencyController extends Controller
@@ -18,7 +21,13 @@ class CurrencyController extends Controller
     public function index()
     {
         $data = Currency::latest()->get();
-        return response()->json([($data), 'All Data susccessfull.']);
+        if (is_null($data)) {
+            return response()->json('data not found', ); 
+        } 
+        return response()->json([ 
+        'success'=>'True',
+        'message'=>'All Data susccessfull',
+        'data'=>$data, ]);
        
     }
     public function store(Request $request)
@@ -36,12 +45,18 @@ class CurrencyController extends Controller
 
         $program = Currency::create([
             'currency_name' => $request->currency_name,
+            'symbol' => $request->symbol,
             'client_id' => $request->client_id,
             'position_id' => $request->position_id,           
          ]);
         
-        return response()->json(['Program created successfully.',($program)]);
-    }
+         return response()->json([
+            'success'=>'True',
+            'message'=>'Currency created successfully' ,
+            'data'=>$program,
+            ]);    
+        }
+    
 
     /**
      * Display the specified resource.
@@ -55,11 +70,13 @@ class CurrencyController extends Controller
         if (is_null($program)) {
             return response()->json('Data not found', 404); 
         }
-        return response()->json([($program)]);
-    }
+        return response()->json([
+            'success'=>'True'  ,
+            'data'=>$program,
+            ]);   
+         }
 
-   
-     
+
     public function update(Request $request,$id)
     {
         $validator = Validator::make($request->all(),[
@@ -71,12 +88,16 @@ class CurrencyController extends Controller
         }
         $program=Currency::find($id);
         $program->currency_name = $request->currency_name;
+        $program->symbol = $request->symbol;
         $program->client_id = $request->client_id;
         $program->position_id = $request->position_id;
         $program->update();
         
-        return response()->json(['Program updated successfully.',($program)]);
-    }
+        return response()->json([
+            'success'=>'True',
+             'message'=>'Currency updated successfully.',
+             'data'=>$program,
+             ]);    }
 
     public function destroy($id)
     {
@@ -85,7 +106,7 @@ class CurrencyController extends Controller
         $program->delete();
         return response()->json([
             'success'=>true,
-            'message'=>'User delete successfuly',
+            'message'=>'Currency delete successfuly',
         ],200);
     }
     else {

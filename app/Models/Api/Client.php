@@ -19,6 +19,12 @@ class Client extends Model
         'pincode',
         'start_date',
         'end_date',
+        'commercials_type'
 
     ];
+    protected $casts = [
+        "commercials_type" => "array",
+
+    ];
+
 }

@@ -5,30 +5,33 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use App\Models\Api\Status;
+use App\Models\User;
 use GrahamCampbell\ResultType\Success;
 use GuzzleHttp\Psr7\Message;
+use Illuminate\Support\Facades\Hash;
 
-class StatusController extends Controller
+
+class RoleUserController extends Controller
 {
 
     public function index()
     {
-        $data = Status::latest()->get();
+        $data = User::with('role')->get();
         if (is_null($data)) {
             return response()->json('data not found', ); 
         } 
         return response()->json([ 
         'success'=>'True',
         'message'=>'All Data susccessfull',
-        'data'=>$data, ]);
+        'data'=>$data,
+         $data[0]->role ]);
        
     }
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(),[
             //   'name' => 'required',
-            //  'email' => 'required',
+             'email' => 'required',
             // 'contact_person' => 'required',
             //  'contact_number' => 'required',
         ]);
@@ -37,23 +40,24 @@ class StatusController extends Controller
             return response()->json($validator->errors());       
         }
 
-        $program = Status::create([
-            'status_name' => $request->status_name,
-
-         ]);  
-         if (is_null($program)) {
-            return response()->json('storage error', ); 
-        } 
-        return response()->json([
-            'success'=>'True',
-            'message'=>'Client created successfully',
-            'data'=>$program,
-            ]);
+    {
+        $user = User::create([
+            'name'=> $request->name,
+            'email'=> $request->email,
+            'role_id'=> $request->role_id,
+            'password'=> Hash::make($request->password)         
+        ]);
+       $token = $user->createToken('Token')->accessToken;
+       return response()->json([
+        'success'=>'True',
+        'message'=>'User Create successfull',
+        'token'=>$token,'user'=>$user],200);
+    }
     }
 
     public function show($id)
     {
-        $program = Status::find($id);
+        $program = User::find($id);
         if (is_null($program)) {
             return response()->json('Data not found', 404); 
         }
@@ -73,19 +77,21 @@ class StatusController extends Controller
         if($validator->fails()){
             return response()->json($validator->errors());       
         }
-        $program=Status::find($id);
-        $program->status_name = $request->status_name;
-
+        $program=User::find($id);
+        $program->name = $request->name;
+        $program->email = $request->email;
+        $program->role_id = $request->role_id;
+        $program->password = $request->password;
         $program->update();
         return response()->json([
             'success'=>'True',
-             'message'=>'client updated successfully.',
+             'message'=>'User updated successfully.',
              'data'=>$program]);
     }
 
     public function destroy($id)
     {
-        $program=Status::find($id);
+        $program=User::find($id);
        if (!empty($program)) {
         $program->delete();
         return response()->json([

@@ -5,23 +5,25 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use App\Models\Api\Status;
+use App\Models\Api\ClientCommercial;
 use GrahamCampbell\ResultType\Success;
 use GuzzleHttp\Psr7\Message;
 
-class StatusController extends Controller
+class ClientCommercialController extends Controller
 {
 
     public function index()
     {
-        $data = Status::latest()->get();
+        $data = ClientCommercial::with('currency')->get();
         if (is_null($data)) {
             return response()->json('data not found', ); 
+
         } 
-        return response()->json([ 
-        'success'=>'True',
-        'message'=>'All Data susccessfull',
-        'data'=>$data, ]);
+            return response()->json([ 
+                'success'=>'True',
+                'message'=>'All Data susccessfull',
+                'data'=>$data,
+                 $data[0]->currency ]);
        
     }
     public function store(Request $request)
@@ -29,6 +31,7 @@ class StatusController extends Controller
         $validator = Validator::make($request->all(),[
             //   'name' => 'required',
             //  'email' => 'required',
+            'form' => 'required',
             // 'contact_person' => 'required',
             //  'contact_number' => 'required',
         ]);
@@ -37,9 +40,12 @@ class StatusController extends Controller
             return response()->json($validator->errors());       
         }
 
-        $program = Status::create([
-            'status_name' => $request->status_name,
-
+        $program = ClientCommercial::create([
+            'form' => $request->form,
+            'to' => $request->to,
+            'percentage' => $request->percentage,
+            'currency_id' => $request->currency_id,
+            'client_id' => $request->client_id,
          ]);  
          if (is_null($program)) {
             return response()->json('storage error', ); 
@@ -53,7 +59,7 @@ class StatusController extends Controller
 
     public function show($id)
     {
-        $program = Status::find($id);
+        $program = ClientCommercial::find($id);
         if (is_null($program)) {
             return response()->json('Data not found', 404); 
         }
@@ -73,9 +79,12 @@ class StatusController extends Controller
         if($validator->fails()){
             return response()->json($validator->errors());       
         }
-        $program=Status::find($id);
-        $program->status_name = $request->status_name;
-
+        $program=ClientCommercial::find($id);
+        $program->form = $request->form;
+        $program->to = $request->to;
+        $program->percentage = $request->percentage;
+        $program->currency_id = $request->currency_id;
+        $program->client_id = $request->client_id;
         $program->update();
         return response()->json([
             'success'=>'True',
@@ -85,7 +94,7 @@ class StatusController extends Controller
 
     public function destroy($id)
     {
-        $program=Status::find($id);
+        $program=ClientCommercial::find($id);
        if (!empty($program)) {
         $program->delete();
         return response()->json([

@@ -13,7 +13,10 @@ class RoleController extends Controller
     public function index()
     {
         $data = Role::latest()->get();
-        return response()->json([($data), 'All Data susccessfull.']);
+        return response()->json([ 
+            'success'=>'True',
+            'message'=>'All Data susccessfull',
+            'data'=>$data ]);
        
     }
     public function store(Request $request)
@@ -27,13 +30,15 @@ class RoleController extends Controller
         }
 
         $program = Role::create([
-            'role_name' => $request->role_name,
+         'role_name' => $request->role_name,
         'privileges_type' => $request->privileges_type,
                      
          ]);
         
-        return response()->json(['Program created successfully.',($program)]);
-    }
+         return response()->json([
+            'success'=>'True',
+            'message'=>'Role created successfully' ,
+            'data'=>$program,]);     }
 
     /**
      * Display the specified resource.
@@ -47,8 +52,11 @@ class RoleController extends Controller
         if (is_null($program)) {
             return response()->json('Data not found', 404); 
         }
-        return response()->json([($program)]);
-    }
+        return response()->json([
+            'success'=>'True',
+            'data'=>$program,
+            ]);    
+        }
 
    
      
@@ -65,8 +73,11 @@ class RoleController extends Controller
         $program->role_name = $request->role_name;
         $program->update();
         
-        return response()->json(['Program updated successfully.',($program)]);
-    }
+        return response()->json([
+            'success'=>'True',
+             'message'=>'Role updated successfully.',
+             'data'=>$program
+             ]);     }
 
     public function destroy($id)
     {
@@ -83,8 +94,7 @@ class RoleController extends Controller
             'success'=>false,
             'message'=>'something wrong try again ',
         ]);
-    }
-       
+    }  
     }
 }
 

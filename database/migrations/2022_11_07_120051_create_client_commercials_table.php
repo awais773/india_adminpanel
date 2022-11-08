@@ -13,12 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('status', function (Blueprint $table) {
+        Schema::create('client_commercials', function (Blueprint $table) {
             $table->id();
-            $table->string('status_name')->nullable();
-            $table->foreignId("position_id")->nullable()->constrained('positions');
-            $table->foreignId("client_id")->nullable()->constrained('clients');
+            $table->string('form')->nullable();
+            $table->string('to')->nullable();
+            $table->string('percentage')->nullable();
             $table->foreignId("currency_id")->nullable()->constrained('currencies');
+            $table->foreignId("client_id")->nullable()->constrained('clients');
             $table->timestamps();
         });
     }
@@ -30,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('status');
+        Schema::dropIfExists('client_commercials');
     }
 };

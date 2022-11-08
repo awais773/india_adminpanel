@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Http\Controllers\Api;
-
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -17,8 +15,11 @@ class PositionController extends Controller
      */
     public function index()
     {
-        $data = Position::latest()->get();
-        return response()->json([($data), 'All Data susccessfull.']);
+        $data = Position::with('client')->get();
+        return response()->json([ 
+            'success'=>'True',
+            'message'=>'All Data susccessfull',
+            'data'=>$data ]);
        
     }
     public function store(Request $request)
@@ -44,8 +45,11 @@ class PositionController extends Controller
             'client_name' => $request->client_name,           
          ]);
         
-        return response()->json(['Program created successfully.',($program)]);
-    }
+         return response()->json([
+            'success'=>'True',
+            'message'=>'Position created successfully' ,
+            'data'=>$program,
+            ]);    }
 
     /**
      * Display the specified resource.
@@ -59,8 +63,10 @@ class PositionController extends Controller
         if (is_null($program)) {
             return response()->json('Data not found', 404); 
         }
-        return response()->json([($program)]);
-    }
+        return response()->json([
+            'success'=>'True' ,
+            'data'=>$program
+            ]);}
 
    
      
@@ -83,8 +89,10 @@ class PositionController extends Controller
         $program->client_name = $request->client_name;
         $program->update();
         
-        return response()->json(['Program updated successfully.',($program)]);
-    }
+        return response()->json([
+            'success'=>'True',
+            'message'=>'Position updated successfully.',
+            'data'=>$program]);    }
 
     public function destroy($id)
     {
@@ -93,7 +101,7 @@ class PositionController extends Controller
         $program->delete();
         return response()->json([
             'success'=>true,
-            'message'=>'User delete successfuly',
+            'message'=>'Position delete successfuly',
         ],200);
     }
     else {

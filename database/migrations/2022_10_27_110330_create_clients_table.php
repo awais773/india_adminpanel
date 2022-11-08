@@ -18,15 +18,16 @@ return new class extends Migration
             $table->string('name')->nullable();
             $table->string('email')->nullable();
             $table->string('contact_person')->nullable();
-            $table->integer('contact_number')->nullable();
+            $table->string('contact_number')->nullable();
             $table->string('city')->nullable();
             $table->string('state')->nullable();
             $table->string('pincode')->nullable();
             $table->text('address')->nullable();
-            $table->date('start_date')->nullable();
-            $table->date('end_date')->nullable();
+            $table->string('start_date')->nullable();
+            $table->string('end_date')->nullable();
             $table->string('agreementfile')->nullable();
             $table->string('path')->nullable();
+            $table->json('commercials_type')->nullable();
             $table->timestamps();
         });
     }
