@@ -28,6 +28,8 @@ return new class extends Migration
             $table->string('agreementfile')->nullable();
             $table->string('path')->nullable();
             $table->json('commercials_type')->nullable();
+            $table->string('position_allows')->nullable();
+            $table->string('document')->nullable();
             $table->timestamps();
         });
     }

@@ -7,6 +7,9 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\Api\Role;
 use GrahamCampbell\ResultType\Success;
 use GuzzleHttp\Psr7\Message;
+use App\Models\Api\UserLog;
+use Illuminate\Support\Facades\Auth;
+
 
 class RoleController extends Controller
 {
@@ -22,7 +25,7 @@ class RoleController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(),[
-              'role_name' => 'required',
+            //   'role_name' => 'required',
         ]);
 
         if($validator->fails()){
@@ -34,11 +37,21 @@ class RoleController extends Controller
         'privileges_type' => $request->privileges_type,
                      
          ]);
+         $user = Auth::guard('api')->user();
+         $userlog = UserLog::create([
+            'action' => 'Create',
+            'module' => 'Role',
+            'user_id' => $user->id,
+            'role_id' => $program->id,
+
+         ]);  
         
          return response()->json([
             'success'=>'True',
             'message'=>'Role created successfully' ,
-            'data'=>$program,]);     }
+            'data'=>$program,
+            'user'=> $userlog]);     
+        }
 
     /**
      * Display the specified resource.
@@ -63,24 +76,45 @@ class RoleController extends Controller
     public function update(Request $request,$id)
     {
         $validator = Validator::make($request->all(),[
-            'role_name' => 'required|string|max:255',
+            // 'role_name' => 'required|string|max:255',
         ]);
 
         if($validator->fails()){
             return response()->json($validator->errors());       
         }
         $program=Role::find($id);
-        $program->role_name = $request->role_name;
+        if (!empty($request->input('role_name'))) {
+            $program->role_name = $request->input('role_name');
+        }
+        if(!empty($request->input('privileges_type'))) {
+            $program->privileges_type = $request->input('privileges_type');
+        }
         $program->update();
+
+        $user = Auth::guard('api')->user();
+        $userlog = UserLog::create([
+           'action' => 'Update',
+           'module' => 'Role',
+           'user_id' => $user->id,
+           'role_id' => $program->id,
+
+        ]);  
         
         return response()->json([
             'success'=>'True',
              'message'=>'Role updated successfully.',
-             'data'=>$program
+             'data'=>$program,
+             'user'=>$userlog
              ]);     }
 
     public function destroy($id)
     {
+        $user = Auth::guard('api')->user();
+        $progra = Userlog::create([
+            'action' => 'Delete', 
+            'module' => 'Role',
+            'user_id' => $user->id,
+         ]);
         $program=Role::find($id);
        if (!empty($program)) {
         $program->delete();

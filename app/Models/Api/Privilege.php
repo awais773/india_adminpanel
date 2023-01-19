@@ -9,13 +9,8 @@ class Privileg extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'position_name',
-        'number_opening',
-        'salary_range_from',
-        'salary_range_to',
-        'descripition',
-        'client_id',
-        'client_name',
+        'name',
+        'privileges_type',
     ];
 
     public function client() {

@@ -19,6 +19,9 @@ class Client extends Model
         'pincode',
         'start_date',
         'end_date',
+        'document',
+        'position_allows',
+        'end_date',
         'commercials_type'
 
     ];

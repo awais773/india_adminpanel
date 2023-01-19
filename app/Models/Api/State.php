@@ -5,16 +5,12 @@ namespace App\Models\Api;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Role extends Model
+class State extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'role_name',
-        'privileges_type',
+        'name',
 
     ];
-    protected $casts = [
-        "privileges_type" => "array",
 
-    ];
 }

@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\Api\Status;
 use GrahamCampbell\ResultType\Success;
 use GuzzleHttp\Psr7\Message;
+use App\Models\Api\UserLog;
+use Illuminate\Support\Facades\Auth;
+
 
 class StatusController extends Controller
 {
@@ -41,6 +44,14 @@ class StatusController extends Controller
             'status_name' => $request->status_name,
 
          ]);  
+         $user = Auth::guard('api')->user();
+         $progra = UserLog::create([
+            'action' => 'Create',
+            'module' => 'Status',
+            'user_id' => $user->id,
+            'status_id' => $program->id,
+
+         ]);
          if (is_null($program)) {
             return response()->json('storage error', ); 
         } 
@@ -48,6 +59,7 @@ class StatusController extends Controller
             'success'=>'True',
             'message'=>'Client created successfully',
             'data'=>$program,
+            'user'=>$progra,
             ]);
     }
 
@@ -75,22 +87,37 @@ class StatusController extends Controller
         }
         $program=Status::find($id);
         $program->status_name = $request->status_name;
-
         $program->update();
+        $user = Auth::guard('api')->user();
+        $progra = UserLog::create([
+           'action' => 'Updata',
+           'module' => 'Status',
+           'user_id' => $user->id,
+           'status_id' => $program->id,
+
+        ]);
         return response()->json([
             'success'=>'True',
              'message'=>'client updated successfully.',
-             'data'=>$program]);
+             'data'=>$program,
+            'user'=>$progra]);
     }
 
     public function destroy($id)
     {
+        $user = Auth::guard('api')->user();
+        $progra = Userlog::create([
+            'action' => 'Delete', 
+            'module' => 'Status',
+            'user_id' => $user->id,
+         ]);
         $program=Status::find($id);
        if (!empty($program)) {
         $program->delete();
         return response()->json([
             'success'=>true,
             'message'=>' delete successfuly',
+            'user'=>$progra
         ],200);
     }
     else {

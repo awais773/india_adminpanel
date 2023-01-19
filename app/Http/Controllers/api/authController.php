@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\api;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Controller;
+use App\Models\Api\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -22,7 +23,7 @@ class AuthController extends Controller
        return response()->json([
         'success'=>'True',
         'message'=>'register successfull',
-        'token'=>$token,'user'=>$user],200);
+        'token'=>$token,'user'=>$user,],200);
     }
 
     public function login(Request $request)
@@ -31,14 +32,17 @@ class AuthController extends Controller
             'email'=>$request->email,
             'password'=>$request->password
         ];
+
           if(auth()->attempt($data))
           {
              $token = auth()->user()->createToken('Token')->accessToken;
              return response()->json([
                 'success'=>'True',
                 'message'=>'login successfull',
-                'token'=>$token],200);
-          }
+                'user'=> User::with('role')->find(Auth::id()),
+                'token'=>$token,
+                 ],200);
+          } 
           else{
             return response()->json([
                 'message'=>'Falls',

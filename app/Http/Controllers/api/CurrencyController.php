@@ -8,7 +8,8 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\Api\Position;
 use App\Models\Api\Client;
 use App\Models\Api\Currency;
-
+use App\Models\Api\UserLog;
+use Illuminate\Support\Facades\Auth;
 use GrahamCampbell\ResultType\Success;
 use GuzzleHttp\Psr7\Message;
 class CurrencyController extends Controller
@@ -34,8 +35,8 @@ class CurrencyController extends Controller
     {
         $validator = Validator::make($request->all(),[
               'currency_name' => 'required',
-            //  'email' => 'required',
-            // 'contact_person' => 'required',
+            //   'position_id' => 'required',
+            //   'client_id' => 'required',
             //  'contact_number' => 'required',
         ]);
 
@@ -49,11 +50,21 @@ class CurrencyController extends Controller
             'client_id' => $request->client_id,
             'position_id' => $request->position_id,           
          ]);
+         $user = Auth::guard('api')->user();
+         $progra = UserLog::create([
+            'action' => 'Create',
+            'module' => 'Currency',
+            'user_id' => $user->id,
+            'currency_id' => $program->id,
+            
+
+         ]);  
         
          return response()->json([
             'success'=>'True',
             'message'=>'Currency created successfully' ,
             'data'=>$program,
+            'user'=>$progra,
             ]);    
         }
     
@@ -92,21 +103,38 @@ class CurrencyController extends Controller
         $program->client_id = $request->client_id;
         $program->position_id = $request->position_id;
         $program->update();
-        
+
+        $user = Auth::guard('api')->user();
+        $progra = UserLog::create([
+           'action' => 'Updata',
+           'module' => 'currency',
+           'user_id' => $user->id,
+           'currency_id' => $program->id,
+
+        ]);
         return response()->json([
             'success'=>'True',
              'message'=>'Currency updated successfully.',
              'data'=>$program,
+             'user'=>$progra,
+
              ]);    }
 
-    public function destroy($id)
+    public function destroy(Request $request ,$id)
     {
+        $user = Auth::guard('api')->user();
+        $progra = Userlog::create([
+            'action' => 'Delete', 
+            'module' => 'Currency',
+            'user_id' => $user->id,
+         ]);
         $program=Currency::find($id);
        if (!empty($program)) {
         $program->delete();
         return response()->json([
             'success'=>true,
             'message'=>'Currency delete successfuly',
+            'user'=> $progra
         ],200);
     }
     else {
