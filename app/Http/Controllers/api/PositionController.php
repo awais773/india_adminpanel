@@ -44,7 +44,10 @@ class PositionController extends Controller
             'salary_range_to' => $request->salary_range_to,
             'descripition' => $request->descripition,
             'client_id' => $request->client_id,
-            'client_name' => $request->client_name,           
+            'client_name' => $request->client_name,     
+            'job_file' => $request->job_file,           
+            'document' => $request->document,           
+      
          ]);
          $user = Auth::guard('api')->user();
          $progra = UserLog::create([
@@ -101,6 +104,8 @@ class PositionController extends Controller
         $program->descripition = $request->descripition;
         $program->client_id = $request->client_id;
         $program->client_name = $request->client_name;
+        $program->job_file = $request->job_file;
+        $program->document = $request->document;
         $program->update();
         $user = Auth::guard('api')->user();
         $progra = UserLog::create([
@@ -108,6 +113,8 @@ class PositionController extends Controller
            'module' => 'Position',
            'user_id' => $user->id,
            'position_id' => $program->id,
+           'update_value' => $progra=$request->update_value,
+
 
         ]);
         

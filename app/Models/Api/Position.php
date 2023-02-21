@@ -16,6 +16,8 @@ class Position extends Model
         'descripition',
         'client_id',
         'client_name',
+        'job_file',
+        'document',
     ];
 
     public function client() {

@@ -100,6 +100,8 @@ class CityController extends Controller
             'module' => 'City',
             'user_id' => $user->id,
             'city_id' => $program->id,
+            'update_value' => $progra=$request->update_value,
+
 
 
         ]);

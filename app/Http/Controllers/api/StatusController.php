@@ -94,6 +94,8 @@ class StatusController extends Controller
            'module' => 'Status',
            'user_id' => $user->id,
            'status_id' => $program->id,
+           'update_value' => $progra=$request->update_value,
+
 
         ]);
         return response()->json([

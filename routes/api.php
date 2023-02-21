@@ -43,6 +43,7 @@ Route::get('geLog/{id}',[App\Http\Controllers\api\ResumeController::class,'geLog
 
 Route::get('getAll',[App\Http\Controllers\api\ResumeController::class,'getAll']);
 Route::get('statusGet',[App\Http\Controllers\api\ResumeController::class,'resumeGet']);
+Route::post('resumeShows',[App\Http\Controllers\api\ResumeController::class,'resumeShows']);
 Route::post('storeLog',[App\Http\Controllers\api\ResumeController::class,'storeLog']);
 Route::get('userLogs/{id}',[App\Http\Controllers\api\RoleUserController::class,'getUserLogs']);
 Route::get('allLogs',[App\Http\Controllers\api\RoleUserController::class,'allLogs']);
@@ -51,6 +52,8 @@ Route::post('documents',[App\Http\Controllers\api\ClientController::class,'docum
 Route::delete('destroyDocument/{id}',[App\Http\Controllers\api\ClientController::class,'destroyDocument']);
 Route::get('totalData',[App\Http\Controllers\api\ClientController::class,'totalData']);
 Route::get('resumeDependencies',[App\Http\Controllers\api\ClientController::class,'resumeDependencies']);
+Route::get('Dacumentget',[App\Http\Controllers\api\ClientController::class,'Dacumentget']);
+
 
 });
 

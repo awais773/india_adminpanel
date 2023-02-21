@@ -20,7 +20,8 @@ class UserLog extends Model
         'role_id',
         'city_id',
         'state_id',
-        'assignPosition_id'
+        'assignPosition_id',
+        'update_value',
     ];
 
     public function user() {

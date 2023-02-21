@@ -33,14 +33,21 @@ class Resume extends Model
         'position_id',
         'state_id',
         'city_id',
+        'client_id',
         'date',
-    
-
-
+        'document',
+        'type',
+        'variable',
+        'total_ctc',
+        'expected_ctc',
     ];
 
     public function status() {
         return $this->hasOne('App\Models\Api\Status', 'id', 'status_id');
+    }
+
+    public function client() {
+        return $this->hasOne('App\Models\Api\Client', 'id', 'client_id');
     }
     public function resumelog() {
         return $this->belongsTo('App\Models\Api\ResumeLog', 'id', 'resume_log_id');

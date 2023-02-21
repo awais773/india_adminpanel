@@ -110,6 +110,8 @@ class CurrencyController extends Controller
            'module' => 'currency',
            'user_id' => $user->id,
            'currency_id' => $program->id,
+           'update_value' => $progra=$request->update_value,
+
 
         ]);
         return response()->json([

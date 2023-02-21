@@ -31,15 +31,17 @@ class RoleUserController extends Controller
     }
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(),[
-            //   'name' => 'required',
-             'email' => 'required',
-            // 'contact_person' => 'required',
-            //  'contact_number' => 'required',
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|string|email|max:255|unique:users',
         ]);
-
+    
         if($validator->fails()){
-            return response()->json($validator->errors());       
+                return response()->json([
+                    'success'=>false,
+                    // 'message' => $validator->errors()->toJson()
+                     'message'=> 'Email already exist',
+        
+                ], 400);
         }
 
     {
@@ -47,6 +49,7 @@ class RoleUserController extends Controller
             'name'=> $request->name,
             'email'=> $request->email,
             'role_id'=> $request->role_id,
+            'block'=> $request->block,
             'password'=> Hash::make($request->password)         
         ]);
         $user = Auth::guard('api')->user();
@@ -63,7 +66,7 @@ class RoleUserController extends Controller
         'success'=>'True',
         'message'=>'User Create successfull',
         'token'=>$token,
-        'user'=>$user,
+        'user'=>$roleUsers,
         'userLog'=>$userlog
 
     ],200);
@@ -94,6 +97,7 @@ class RoleUserController extends Controller
         $program->name = $request->name;
         $program->email = $request->email;
         $program->role_id = $request->role_id;
+        $program->block = $request->block;
         $program->password = Hash::make($request->password);       
         $program->update();
 
@@ -103,6 +107,8 @@ class RoleUserController extends Controller
            'module' => 'User',
            'users_id' => $program->id,
            'user_id' =>  $user->id,
+           'update_value' => $progra=$request->update_value,
+
         ]);  
         return response()->json([
             'success'=>'True',

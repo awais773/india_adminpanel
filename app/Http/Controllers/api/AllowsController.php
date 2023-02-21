@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\User;
 use App\Models\Api\Allow;
 use App\Models\Api\Resume;
 use App\Models\Api\Status;
@@ -107,6 +108,8 @@ class AllowsController extends Controller
             'module' => 'AssignPosition',
             'user_id' => $user->id,
             'assignPosition_id' => $program->id,
+            'update_value' => $progra=$request->update_value,
+
 
         ]);
         return response()->json([
@@ -157,17 +160,31 @@ class AllowsController extends Controller
 
 
     public function dashboradData()
-    {
-        $user = Auth::guard('api')->user();
-        $userAllow = Allow::with('user', 'client', 'position')->whereIn('user_id', $user)->get();
-        $userAllows = Resume::with('position')->select('position_id')->whereIn('user_id', $user)->get();
-        if (is_null($userAllow)) {
-            return response()->json('Data not found', 404);
+    {  
+        $user = Auth::user();
+        if($user->role_id === 1){
+            $userAllow = Allow::with('user', 'client', 'position')->get() ;
+            $userAllows = Resume::with('position')->select('position_id')->get();
+            if (is_null($userAllow)) {
+                return response()->json('Data not found', 404);
+            }
+            return response()->json([
+                'success' => 'True',
+                'data' => $userAllow,
+                'resume' => $userAllows
+            ]);
+        }else{
+            $userAllow = Allow::with('user', 'client', 'position')->whereIn('user_id', $user)->get() ;
+            $userAllows = Resume::with('position')->select('position_id')->whereIn('user_id', $user)->get();
+            if (is_null($userAllow)) {
+                return response()->json('Data not found', 404);
+            }
+            return response()->json([
+                'success' => 'True',
+                'data' => $userAllow,
+                'resume' => $userAllows
+            ]);
         }
-        return response()->json([
-            'success' => 'True',
-            'data' => $userAllow,
-            'resume' => $userAllows
-        ]);
+       
     }
 }

@@ -124,7 +124,7 @@ class ClientController extends Controller
         $program->commercials_type = $request->commercials_type;
         $program->position_allows = $request->position_allows;
         $program->document = $request->document;
-
+        // $program-> column1 => $request->input('column1_value'),
         $program->update();
         $user = Auth::guard('api')->user();
         $progra = UserLog::create([
@@ -132,6 +132,9 @@ class ClientController extends Controller
             'module' => 'client',
             'user_id' => $user->id,
             'client_id' => $program->id,
+            'update_value' => $progra=$request->update_value,
+
+
 
 
         ]);
@@ -187,9 +190,22 @@ class ClientController extends Controller
             ]);
     }
 
+    public function Dacumentget()
+    {
+        $data = Document::latest()->get();
+        if (is_null($data)) {
+            return response()->json('data not found',);
+        }
+        return response()->json([
+            'success' => 'True',
+            'message' => 'All Data susccessfull',
+            'data' => $data,
+        ]);
+    }
+
     public function destroyDocument($id)
     {
-        $program = Document::find($id);
+        $program = Document::where('path',$id);
         if (!empty($program)) {
             $program->delete();
             return response()->json([
@@ -198,7 +214,7 @@ class ClientController extends Controller
             ], 200);
         } else {
             return response()->json([
-                'success' => 'False',
+                'success' => false,
                 'message' => 'something wrong try again ',
             ]);
         }

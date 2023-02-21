@@ -27,7 +27,7 @@ class ResumeController extends Controller
 
     public function index()
     {
-        $data = Resume::with('status','position','city','state','currentCity','expectedCity' )->get();
+        $data = Resume::with('status', 'position', 'city', 'state', 'currentCity', 'expectedCity', 'client')->get();
         if (is_null($data)) {
             return response()->json('data not found',);
         }
@@ -75,6 +75,12 @@ class ResumeController extends Controller
             'position_id' => $request->position_id,
             'city_id' => $request->city_id,
             'state_id' => $request->state_id,
+            'client_id' => $request->client_id,
+            'document' => $request->document,
+            'expected_ctc' => $request->expected_ctc,
+            'variable' => $request->variable,
+            'type' => $request->type,
+            'total_ctc' => $request->total_ctc,
             'user_id' =>  $user->id,
 
         ]);
@@ -84,7 +90,7 @@ class ResumeController extends Controller
             'resume_id' => $program->id,
             'status_id' => $program->status_id,
             'user_id' =>  $user->id,
-        ]); 
+        ]);
         $user = Auth::guard('api')->user();
         $userlog = UserLog::create([
             'action' => 'Create',
@@ -116,6 +122,7 @@ class ResumeController extends Controller
         $program->state;
         $program->expectedCity;
         $program->currentCity;
+        $program->client;
 
         if (is_null($program)) {
             return response()->json('Data not found', 404);
@@ -161,7 +168,13 @@ class ResumeController extends Controller
         $program->status_id = $request->status_id;
         $program->position_id = $request->position_id;
         $program->city_id = $request->city_id;
+        $program->client_id = $request->client_id;
         $program->state_id = $request->state_id;
+        $program->document = $request->document;
+        $program->type = $request->type;
+        $program->total_ctc = $request->total_ctc;
+        $program->expected_ctc = $request->expected_ctc;
+        $program->variable = $request->variable;
         $program->user_id = $user->id;
 
         $program->update();
@@ -171,6 +184,8 @@ class ResumeController extends Controller
             'resume_id' => $program->id,
             'status_id' => $program->status_id,
             'user_id' => $user->id,
+            'update_value' => $progra = $request->update_value,
+
 
         ]);
         $user = Auth::guard('api')->user();
@@ -224,7 +239,8 @@ class ResumeController extends Controller
         $position = Position::latest()->get();
         $client = Client::latest()->get();
         $user = User::latest()->get();
-        $result = ['currency' => $Currency, 'position' => $position, 'client' => $client , 'user'=>$user];
+        $status = Status::latest()->get();
+        $result = ['currency' => $Currency, 'position' => $position, 'client' => $client, 'user' => $user, 'status' => $status];
         return response()->json([
             'success' => 'True',
             'message' => 'All Data susccessfull',
@@ -270,4 +286,57 @@ class ResumeController extends Controller
             'data' => $program,
         ]);
     }
+
+
+
+    public function resumeShows(Request $request)
+    {
+        if ($request->status_id && $request->start_date && $request->end_date) {
+            $status_id = $request->input('status_id');
+            $start_date = $request->input('start_date');
+            $end_date = $request->input('end_date');
+            $user_logs = ResumeLog::select('resume_id')->where('status_id', $status_id)
+                ->whereBetween('created_at', [$start_date, $end_date])->get();
+
+                $resume_ids = $user_logs->pluck('resume_id')->toArray();
+                $resumes = Resume::with('status', 'currentCity', 'position', 'city', 'state', 'expectedCity', 'client')->whereIn('id', $resume_ids)->get();
+
+            if (is_null($resumes)) {
+                return response()->json('data not found',);
+            }
+            return response()->json([
+                'success' => 'True',
+                'message' => 'All Data susccessfull',
+                'data' => $resumes,
+            ]);
+        } else ($request->position_id && $request->status_id && $request->client_id); {
+
+            $position = $request->position_id;
+            $status = $request->status_id;
+            $client = $request->client_id;
+            $data = Resume::latest()->with('status', 'currentCity', 'position', 'city', 'state', 'expectedCity', 'client')->where(function ($query) use ($position, $status, $client) {
+                if ($position) {
+                    $query->where('position_id', $position);
+                }
+
+                if ($status) {
+                    $query->where('status_id', $status);
+                }
+                if ($client) {
+                    $query->where('client_id', $client);
+                }
+            })->get();
+
+
+            if (is_null($data)) {
+                return response()->json('data not found',);
+            }
+            return response()->json([
+                'success' => 'True',
+                'message' => 'All Data susccessfull',
+                'data' => $data,
+            ]);
+        }
+    }
+
 }

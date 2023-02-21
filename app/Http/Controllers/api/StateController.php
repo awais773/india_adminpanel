@@ -100,6 +100,7 @@ class StateController extends Controller
             'module' => 'State',
             'user_id' => $user->id,
             'state_id' => $program->id,
+            'update_value' => $progra=$request->update_value,
 
 
         ]);
